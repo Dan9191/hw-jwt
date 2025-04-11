@@ -1,5 +1,7 @@
 package com.example.hw_jwt.controller;
 
+import com.example.hw_jwt.model.UserLoginResult;
+import com.example.hw_jwt.service.UserService;
 import com.example.hw_jwt.view.LoginUserView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -14,6 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/create-token")
 @RequiredArgsConstructor
 public class TokenController {
+
+    /**
+     * Сервис по работе с пользователями.
+     */
+    private final UserService userService;
 
     @GetMapping
     public String showLoginForm(Model model) {
@@ -30,9 +37,14 @@ public class TokenController {
         if ("send".equals(action)) {
             if (loginUser.getSendTypeList() == null || loginUser.getSendTypeList().isEmpty()) {
                 model.addAttribute("errorMessage", "Должен быть выбран хотя бы 1 способ отправки");
+            }
+            UserLoginResult userLoginResult = userService.loginUser(loginUser);
+            if (userLoginResult == null) {
+                model.addAttribute("errorMessage", "Невозможно завершить операцию");
+            } else if (userLoginResult.success()) {
+                model.addAttribute("message", userLoginResult.token());
             } else {
-                System.out.println(loginUser);
-                model.addAttribute("message", "Токен отправлен");
+                model.addAttribute("errorMessage",userLoginResult.errorMessage());
             }
         } else {
             model.addAttribute("errorMessage", "Неизвестная операция");

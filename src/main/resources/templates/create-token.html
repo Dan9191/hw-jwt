@@ -62,6 +62,22 @@
                     <div th:if="${errorMessage}" class="alert alert-danger mt-2">
                         <span th:text="${errorMessage}"></span>
                     </div>
+                    <div th:if="${message}" class="mt-3 alert alert-success">
+    <pre style="
+        color: #155724;
+        background-color: #e8f5e9;
+        padding: 10px;
+        border-radius: 4px;
+        white-space: pre-wrap;       /* Перенос строк */
+        word-wrap: break-word;      /* Перенос длинных слов */
+        overflow-wrap: break-word;  /* Альтернативный вариант */
+        font-family: monospace;     /* Моноширинный шрифт */
+    ">
+        <span th:text="${message}"></span>
+    </pre>
+                    </div>
+
+
                 </div>
 
                 <button type="submit" name="action" value='send' class="btn btn-primary">Отправить токен</button>

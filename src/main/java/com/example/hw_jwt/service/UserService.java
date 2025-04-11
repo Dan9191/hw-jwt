@@ -3,12 +3,17 @@ package com.example.hw_jwt.service;
 import com.example.hw_jwt.entity.Role;
 import com.example.hw_jwt.entity.UserJwt;
 import com.example.hw_jwt.model.UserCreationResult;
+import com.example.hw_jwt.model.UserLoginResult;
 import com.example.hw_jwt.repository.UserJwtRepository;
 import com.example.hw_jwt.view.CreateUserView;
+import com.example.hw_jwt.view.LoginUserView;
 import com.example.hw_jwt.view.RoleStub;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 /**
  * Сервис по работе с пользователями.
@@ -22,12 +27,15 @@ public class UserService {
 
     private final RoleService roleService;
 
+    private final JwtService jwtService;
+
     /**
      * Создание пользователя.
      *
      * @param createUserView Представление пользователя.
      * @return Результат создания пользователя.
      */
+    @Transactional
     public UserCreationResult createUser(CreateUserView createUserView) {
         log.info("Начало создания пользователя {}", createUserView.getLogin());
         // Проверка уникальности логина
@@ -53,5 +61,18 @@ public class UserService {
         log.info("Пользователь {} успешно добавлен", createUserView.getLogin());
         return UserCreationResult.success(user);
     }
+
+    public UserLoginResult loginUser(LoginUserView loginUser) {
+        Optional<UserJwt> userJwt =
+                userJwtRepository.findByLoginAndPassword(loginUser.getLogin(), loginUser.getPassword());
+        return userJwt.map(jwt -> UserLoginResult.success(jwtService.generateToken(jwt)))
+                .orElseGet(() -> UserLoginResult.failure("Не удалось найти пользователя по такой комбинации"));
+    }
+
+    @Transactional
+    public UserJwt getUser(String login) {
+        return userJwtRepository.getByLogin(login);
+    }
+
 
 }

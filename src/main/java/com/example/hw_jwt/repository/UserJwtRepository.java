@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserJwtRepository extends JpaRepository<UserJwt, Long> {
 
@@ -16,4 +17,9 @@ public interface UserJwtRepository extends JpaRepository<UserJwt, Long> {
             value = "select u.* from jwt_service.user_jwt u where u.role_id in (:roleId)")
     List<UserJwt> findByRoleId(@Param("roleId") Integer id);
 
+    @Query(nativeQuery = true,
+            value = "select u.* from jwt_service.user_jwt u where u.login = :login and u.password = :password")
+    Optional<UserJwt> findByLoginAndPassword(@Param("login") String login, @Param("password") String password);
+
+    UserJwt getByLogin(String login);
 }

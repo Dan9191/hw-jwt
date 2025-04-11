@@ -20,3 +20,11 @@ CREATE TABLE user_jwt (
                         role_id INTEGER NOT NULL,
                         FOREIGN KEY (role_id) REFERENCES role(id)
 );
+
+-- Создаем таблицу jwt_config
+CREATE TABLE jwt_config (
+                          id BIGSERIAL PRIMARY KEY,
+                          algorithm VARCHAR(100) NOT NULL UNIQUE,
+                          key VARCHAR(100) NOT NULL UNIQUE,
+                          exp_millis BIGINT NOT NULL
+);

@@ -1,6 +1,6 @@
 package com.example.hw_jwt.configuration;
 
-import lombok.Getter;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -9,6 +9,21 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConfigurationProperties(prefix = "short-links.properties")
-@Getter
+@Data
 public class AppProperties {
+
+    /**
+     * Алгоритм кодирования токена.
+     */
+    private String algorithm;
+
+    /**
+     * Алгоритм кодирования токена.
+     */
+    private String secretKey;
+
+    /**
+     * Срок жизни токена в миллисекундах.
+     */
+    private long expMillis;
 }
