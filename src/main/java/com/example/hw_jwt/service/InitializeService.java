@@ -8,6 +8,8 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 /**
  * Сервис стартовой настройки.
  */
@@ -24,15 +26,21 @@ public class InitializeService {
      */
     @PostConstruct
     public void initJwtConfig() {
-        // Очищаем таблицу
-        jwtConfigRepository.deleteAll();
 
-        // Создаем новую конфигурацию
-        JwtConfig config = new JwtConfig();
-        config.setAlgorithm(appProperties.getAlgorithm());
-        config.setKey(appProperties.getSecretKey());
-        config.setExpMillis(appProperties.getExpMillis());
+        Optional<JwtConfig> config = jwtConfigRepository.findAll().stream().findFirst();
+        if (appProperties.isConfigurationChangeSign() || config.isEmpty()) {
+            // Очищаем таблицу
+            jwtConfigRepository.deleteAll();
 
-        jwtConfigRepository.save(config);
+            // Создаем новую конфигурацию
+            JwtConfig newConfig = new JwtConfig();
+            newConfig.setAlgorithm(appProperties.getAlgorithm());
+            newConfig.setKey(appProperties.getSecretKey());
+            newConfig.setExpMillis(appProperties.getExpMillis());
+
+            jwtConfigRepository.save(newConfig);
+        }
+
+
     }
 }

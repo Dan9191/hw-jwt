@@ -11,27 +11,36 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 /**
  * Сущность для хранения ссылки.
  */
 @Entity
-@Table(name = "user_jwt")
+@Table(name = "jwt_token")
 @Data
-public class UserJwt {
+public class JwtToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "login", nullable = false, unique = true)
-    private String login;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "user_jwt_id", nullable = false)
+    private UserJwt userJwt;
 
-    @Column(name = "password",  nullable = false)
-    private String password;
+    @Column(name = "token", nullable = false, unique = true)
+    private String token;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
+    @JoinColumn(name = "token_status_id", nullable = false)
+    private TokenStatus tokenStatus;
+
+    @Column(name = "from_date", columnDefinition = "TIMESTAMP DEFAULT NOW()")
+    private LocalDateTime fromDate;
+
+    @Column(name = "to_date")
+    private LocalDateTime toDate;
 
 }

@@ -1,19 +1,23 @@
 package com.example.hw_jwt.service;
 
 import com.example.hw_jwt.entity.Role;
+import com.example.hw_jwt.entity.RoleStub;
 import com.example.hw_jwt.entity.UserJwt;
 import com.example.hw_jwt.model.UserCreationResult;
 import com.example.hw_jwt.model.UserLoginResult;
 import com.example.hw_jwt.repository.UserJwtRepository;
 import com.example.hw_jwt.view.CreateUserView;
 import com.example.hw_jwt.view.LoginUserView;
-import com.example.hw_jwt.view.RoleStub;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+
+import static com.example.hw_jwt.entity.RoleStub.DELETED;
 
 /**
  * Сервис по работе с пользователями.
@@ -69,10 +73,26 @@ public class UserService {
                 .orElseGet(() -> UserLoginResult.failure("Не удалось найти пользователя по такой комбинации"));
     }
 
+//    @Transactional
+//    public UserJwt getUser(String login) {
+//        return userJwtRepository.getByLogin(login);
+//    }
+
     @Transactional
-    public UserJwt getUser(String login) {
-        return userJwtRepository.getByLogin(login);
+    public List<UserJwt> getAllUser() {
+        return userJwtRepository.findAll();
     }
 
-
+    /**
+     * Помечаем пользователя и его токены как "Удаленнные".
+     *
+     * @param id Идентификатор пользователя.
+     */
+    @Transactional
+    public void markUserAsDeleted(Long id) {
+        UserJwt userJwt =  userJwtRepository.getReferenceById(id);
+        userJwt.setRole(roleService.findById(DELETED.getId()));
+        jwtService.markTokensAsDeletedByUser(userJwt);
+        userJwtRepository.save(userJwt);
+    }
 }

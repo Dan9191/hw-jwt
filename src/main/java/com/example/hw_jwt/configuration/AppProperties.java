@@ -26,4 +26,9 @@ public class AppProperties {
      * Срок жизни токена в миллисекундах.
      */
     private long expMillis;
+
+    /**
+     * Включить ли обновление конфигурации JWT в зависимости от настроек приложение.
+     */
+    private boolean configurationChangeSign = false;
 }

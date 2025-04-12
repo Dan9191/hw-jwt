@@ -36,7 +36,7 @@
                 <div class="mb-3">
                     <label for="role" class="form-label">Роль</label>
                     <select class="form-select" id="role" th:field="*{roleStub}">
-                        <option th:each="role : ${T(com.example.hw_jwt.view.RoleStub).values()}"
+                        <option th:each="role : ${T(com.example.hw_jwt.entity.RoleStub).values()}"
                                 th:value="${role}"
                                 th:text="${role.label}"></option>
                     </select>

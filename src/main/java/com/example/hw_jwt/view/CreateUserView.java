@@ -1,5 +1,6 @@
 package com.example.hw_jwt.view;
 
+import com.example.hw_jwt.entity.RoleStub;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
