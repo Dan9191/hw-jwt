@@ -89,4 +89,9 @@ public class OperationsController {
 
         return "redirect:/login";
     }
+
+    private boolean validateCookies(String token) {
+        // todo сделать валидацию токена для каждой операции
+        return true;
+    }
 }
