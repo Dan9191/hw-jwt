@@ -72,7 +72,6 @@ public class UserOperationsController {
             response.addCookie(cookie);
             return true;
         }
-        System.out.println(token);
         TokenValidationResult tokenValidationResult = jwtService.validateToken(token);
         if (!tokenValidationResult.isValid() || !tokenValidationResult.role().equals(RoleType.USER)) {
             Cookie cookie = new Cookie("JWT", null);

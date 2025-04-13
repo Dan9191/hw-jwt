@@ -146,15 +146,15 @@ public class JwtService {
                 boolean isActive = ACTIVE_STATUSES.contains(TokenStatusType.findByStatus(jwtToken.getTokenStatus()));
                 boolean notExpired = jwtToken.getToDate().isAfter(LocalDateTime.now());
                 if (isActive && notExpired) {
-                    log.info("JWT token is valid");
+                    log.debug("JWT token is valid");
                     return TokenValidationResult.valid(role, jwtToken.getTokenStatus());
                 } else {
-                    log.warn("JWT token is not valid");
+                    log.debug("JWT token is not valid");
                     return TokenValidationResult.notValid();
                 }
             }
         } catch (Exception e) {
-            log.warn("JWT token is not valid");
+            log.debug("JWT token is not valid");
             return TokenValidationResult.notValid();
         }
     }

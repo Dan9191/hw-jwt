@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -60,12 +61,22 @@ public class AdminOperationsController {
             redirectAttributes.addFlashAttribute("errorMessage", "Ошибка валидации токена");
             return "redirect:/login";
         }
-        if (sendTypeNames== null || sendTypeNames.isEmpty()) {
+        if (sendTypeNames == null || sendTypeNames.isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Должен быть выбран хотя бы 1 способ отправки");
         } else {
-            //todo реализовать отправки
-            redirectAttributes.addFlashAttribute("message", "Отправка удалась");
-            log.info("Sending successful");
+            try {
+                if (sendTypeNames.contains("FILE")) {
+                    response.setContentType("text/plain");
+                    response.setHeader("Content-Disposition", "attachment; filename=\"token.txt\"");
+                    response.getWriter().write(token);
+                    return null;
+                }
+                //todo реализовать отправки
+                redirectAttributes.addFlashAttribute("message", "Отправка удалась");
+                log.info("Sending successful");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         return "redirect:/admin/operations";
     }
@@ -120,7 +131,6 @@ public class AdminOperationsController {
             response.addCookie(cookie);
             return true;
         }
-        System.out.println(token);
         TokenValidationResult tokenValidationResult = jwtService.validateToken(token);
         if (!tokenValidationResult.isValid() || !tokenValidationResult.role().equals(RoleType.ADMIN)) {
             Cookie cookie = new Cookie("JWT", null);
