@@ -7,6 +7,7 @@ import com.example.hw_jwt.view.LoginUserView;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+@Slf4j
 @Controller
 @RequestMapping("/login")
 @RequiredArgsConstructor
@@ -31,7 +33,7 @@ public class LoginController {
     public String login(@ModelAttribute LoginUserView user,
                         HttpServletResponse response,
                         Model model) {
-
+        log.info("login user: {}", user);
         UserLoginResult userLoginResult = userService.loginUser(user);
         if (userLoginResult.success()) {
             Cookie cookie = new Cookie("JWT", userLoginResult.token());
@@ -43,7 +45,7 @@ public class LoginController {
                     : "redirect:/user/operations";
         } else {
             model.addAttribute("errorMessage", userLoginResult.errorMessage());
-            return "/login";
+            return "redirect:/login";
         }
     }
 }

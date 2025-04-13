@@ -84,8 +84,8 @@ public class UserService {
 //    }
 
     @Transactional
-    public List<UserJwt> getAllUser() {
-        return userJwtRepository.findAll();
+    public List<UserJwt> getAllUserWithoutAdmin() {
+        return userJwtRepository.findAllNonAdminUsers();
     }
 
     /**

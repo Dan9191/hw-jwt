@@ -21,5 +21,6 @@ public interface UserJwtRepository extends JpaRepository<UserJwt, Long> {
             value = "select u.* from jwt_service.user_jwt u where u.login = :login and u.password = :password")
     Optional<UserJwt> findByLoginAndPassword(@Param("login") String login, @Param("password") String password);
 
-    UserJwt getByLogin(String login);
+    @Query("SELECT u FROM UserJwt u JOIN u.role r WHERE r.name <> 'ADMIN'")
+    List<UserJwt> findAllNonAdminUsers();
 }
