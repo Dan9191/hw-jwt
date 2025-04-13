@@ -4,6 +4,7 @@ import com.example.hw_jwt.model.UserCreationResult;
 import com.example.hw_jwt.service.UserService;
 import com.example.hw_jwt.view.CreateUserView;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/create-user")
 @RequiredArgsConstructor
+@Slf4j
 public class CreateUserController {
 
     /**

@@ -1,7 +1,7 @@
 package com.example.hw_jwt.service;
 
 import com.example.hw_jwt.entity.Role;
-import com.example.hw_jwt.entity.RoleStub;
+import com.example.hw_jwt.entity.RoleType;
 import com.example.hw_jwt.entity.UserJwt;
 import com.example.hw_jwt.model.UserCreationResult;
 import com.example.hw_jwt.model.UserLoginResult;
@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.hw_jwt.entity.RoleStub.DELETED;
-import static com.example.hw_jwt.entity.RoleStub.findByRole;
+import static com.example.hw_jwt.entity.RoleType.DELETED;
+import static com.example.hw_jwt.entity.RoleType.findByRole;
 
 /**
  * Сервис по работе с пользователями.
@@ -45,25 +45,25 @@ public class UserService {
         log.info("Начало создания пользователя {}", createUserView.getLogin());
         // Проверка уникальности логина
         if (userJwtRepository.existsByLogin(createUserView.getLogin())) {
-            log.warn("Логин уже занят {}", createUserView.getLogin());
+            log.warn("Login {} already taken ", createUserView.getLogin());
             return UserCreationResult.failure("Логин уже занят");
         }
 
-        RoleStub roleStub = createUserView.getRoleStub();
+        RoleType roleType = createUserView.getRoleType();
         // Проверка на единственного администратора
-        if (roleStub == RoleStub.ADMIN && !userJwtRepository.findByRoleId(RoleStub.ADMIN.getId()).isEmpty()) {
-            log.warn("Роль администратора уже занята");
+        if (roleType == RoleType.ADMIN && !userJwtRepository.findByRoleId(RoleType.ADMIN.getId()).isEmpty()) {
+            log.warn("The administrator role is already taken");
             return UserCreationResult.failure("Администратор уже существует");
         }
 
-        Role role = roleService.findById(roleStub.getId());
+        Role role = roleService.findById(roleType.getId());
         UserJwt user = new UserJwt();
         user.setLogin(createUserView.getLogin());
         user.setPassword(createUserView.getPassword());
         user.setRole(role);
 
         userJwtRepository.save(user);
-        log.info("Пользователь {} успешно добавлен", createUserView.getLogin());
+        log.info("User {} added successfully", createUserView.getLogin());
         return UserCreationResult.success(user);
     }
 
@@ -77,11 +77,6 @@ public class UserService {
                         UserLoginResult.failure("Не удалось найти пользователя по такой комбинации")
                 );
     }
-
-//    @Transactional
-//    public UserJwt getUser(String login) {
-//        return userJwtRepository.getByLogin(login);
-//    }
 
     @Transactional
     public List<UserJwt> getAllUserWithoutAdmin() {
@@ -99,5 +94,6 @@ public class UserService {
         userJwt.setRole(roleService.findById(DELETED.getId()));
         jwtService.markTokensAsDeletedByUser(userJwt);
         userJwtRepository.save(userJwt);
+        log.info("User {} deleted successfully", userJwt.getLogin());
     }
 }

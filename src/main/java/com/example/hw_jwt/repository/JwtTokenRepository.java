@@ -28,4 +28,6 @@ public interface JwtTokenRepository extends JpaRepository<JwtToken, Long> {
     void markExpiredTokensAsExpired();
 
     List<JwtToken> findAllByUserJwt(UserJwt userJwt);
+
+    List<JwtToken> findAllByToken(String token);
 }

@@ -1,6 +1,6 @@
 package com.example.hw_jwt.controller;
 
-import com.example.hw_jwt.entity.RoleStub;
+import com.example.hw_jwt.entity.RoleType;
 import com.example.hw_jwt.model.UserLoginResult;
 import com.example.hw_jwt.service.UserService;
 import com.example.hw_jwt.view.LoginUserView;
@@ -40,7 +40,7 @@ public class LoginController {
             cookie.setHttpOnly(true);
             cookie.setPath("/");
             response.addCookie(cookie);
-            return userLoginResult.roleType().equals(RoleStub.ADMIN)
+            return userLoginResult.roleType().equals(RoleType.ADMIN)
                     ? "redirect:/admin/operations"
                     : "redirect:/user/operations";
         } else {

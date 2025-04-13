@@ -132,12 +132,12 @@
                 <td>
                     <form th:action="@{/admin/operations/{id}/delete(id=${user.id})}"
                           method="post"
-                          th:unless="${user.role.id == T(com.example.hw_jwt.entity.RoleStub).DELETED.id}">
+                          th:unless="${user.role.id == T(com.example.hw_jwt.entity.RoleType).DELETED.id}">
                         <button type="submit" class="btn btn-danger btn-sm">
                             Удалить
                         </button>
                     </form>
-                    <span th:if="${user.role.id == T(com.example.hw_jwt.entity.RoleStub).DELETED.id}"
+                    <span th:if="${user.role.id == T(com.example.hw_jwt.entity.RoleType).DELETED.id}"
                           class="badge bg-secondary">
                         Удален
                     </span>

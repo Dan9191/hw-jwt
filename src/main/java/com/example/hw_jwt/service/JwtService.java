@@ -2,13 +2,13 @@ package com.example.hw_jwt.service;
 
 import com.example.hw_jwt.entity.JwtConfig;
 import com.example.hw_jwt.entity.JwtToken;
-import com.example.hw_jwt.entity.Role;
+import com.example.hw_jwt.entity.RoleType;
 import com.example.hw_jwt.entity.TokenStatus;
-import com.example.hw_jwt.entity.TokenStatusStub;
+import com.example.hw_jwt.entity.TokenStatusType;
 import com.example.hw_jwt.entity.UserJwt;
+import com.example.hw_jwt.model.TokenValidationResult;
 import com.example.hw_jwt.repository.JwtConfigRepository;
 import com.example.hw_jwt.repository.JwtTokenRepository;
-import com.example.hw_jwt.repository.TokenStatusRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -27,7 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.hw_jwt.entity.TokenStatusStub.ACTIVE;
+import static com.example.hw_jwt.entity.TokenStatusType.ACTIVE;
+import static com.example.hw_jwt.entity.TokenStatusType.ACTIVE_STATUSES;
 
 /**
  * Сервис для работы с токенами.
@@ -49,7 +50,6 @@ public class JwtService {
      * @return Строковое предствление токена.
      */
     public String generateToken(UserJwt userJwt) {
-
         JwtConfig config = jwtConfigRepository.findAll().stream()
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("JWT configuration not found"));
@@ -85,7 +85,7 @@ public class JwtService {
         jwtToken.setFromDate(LocalDateTime.now());
         jwtToken.setToDate(localToDate);
         jwtTokenRepository.save(jwtToken);
-
+        log.info("Token has been generated for the user {}.", userJwt.getLogin());
         return token;
     }
 
@@ -95,6 +95,11 @@ public class JwtService {
                 .orElseThrow(() -> new IllegalStateException("JWT configuration not found"));
     }
 
+    /**
+     * Обнговленте конфигурации токена.
+     *
+     * @param newConfig Новые настройки.
+     */
     @Transactional
     public void updateConfig(JwtConfig newConfig) {
         JwtConfig currentConfig = getCurrentConfig();
@@ -102,6 +107,7 @@ public class JwtService {
         currentConfig.setKey(newConfig.getKey());
         currentConfig.setExpMillis(newConfig.getExpMillis());
         jwtConfigRepository.save(currentConfig);
+        log.info("JWT configuration updated successfully");
     }
 
     @Transactional
@@ -109,51 +115,57 @@ public class JwtService {
         return jwtTokenRepository.findAllByUserJwt(userJwt);
     }
 
-    public boolean validateToken(String token) {
-
-        JwtConfig jwtConfig = jwtConfigRepository.findAll().stream()
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("JWT configuration not found"));
-
+    /**
+     * Валидация токена.
+     *
+     * @param token Строковое представление токена.
+     * @return результат валидации.
+     */
+    public TokenValidationResult validateToken(String token) {
+        log.info("Start of token validation");
         try {
-            Jwts.parser()
+            JwtConfig jwtConfig = jwtConfigRepository.findAll().stream()
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("JWT configuration not found"));
+
+            Claims claims = Jwts.parser()
                     .setSigningKey(jwtConfig.getKey().getBytes(StandardCharsets.UTF_8))
-                    .parseClaimsJws(token);
-            Claims claims = getClaimsFromToken(token);
-            return true;
+                    .parseClaimsJws(token)
+                    .getBody();
+//            Claims claims = getClaimsFromToken(token);
+//            RoleStub role = RoleStub.findByRoleName(claims.get("role", String.class));
+
+            List<JwtToken> tokens = jwtTokenRepository.findAllByToken(token);
+
+            if (tokens.isEmpty()) {
+                log.warn("JWT token is not valid");
+                return TokenValidationResult.notValid();
+            } else {
+                JwtToken jwtToken = tokens.getFirst();
+                RoleType role = RoleType.findByRole(jwtToken.getUserJwt().getRole());
+                boolean isActive = ACTIVE_STATUSES.contains(TokenStatusType.findByStatus(jwtToken.getTokenStatus()));
+                boolean notExpired = jwtToken.getToDate().isAfter(LocalDateTime.now());
+                if (isActive && notExpired) {
+                    log.info("JWT token is valid");
+                    return TokenValidationResult.valid(role, jwtToken.getTokenStatus());
+                } else {
+                    log.warn("JWT token is not valid");
+                    return TokenValidationResult.notValid();
+                }
+            }
         } catch (Exception e) {
-            return false;
+            log.warn("JWT token is not valid");
+            return TokenValidationResult.notValid();
         }
     }
 
     @Transactional
     public void markTokensAsDeletedByUser(UserJwt userJwt) {
         List<JwtToken> tokens = getTokensByUser(userJwt);
-        TokenStatus status = tokenStatusService.findById(TokenStatusStub.DELETED.getId());
+        TokenStatus status = tokenStatusService.findById(TokenStatusType.DELETED.getId());
         tokens.forEach(token -> token.setTokenStatus(status));
         jwtTokenRepository.saveAll(tokens);
+        log.info("tokens have been removed for the user {}", userJwt.getLogin());
     }
-    /**
-     * Разбирает токен на его состовляющие.
-     *
-     * @param token Токен в виде строки.
-     * @return параметры токена.
-     */
-    public Claims getClaimsFromToken(String token) {
-
-        JwtConfig jwtConfig = jwtConfigRepository.findAll().stream()
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("JWT configuration not found"));
-
-        return Jwts.parser()
-                .setSigningKey(jwtConfig.getKey().getBytes(StandardCharsets.UTF_8))
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-//    public boolean isTokenExpired(String token) {
-//        Date expiration = getClaimsFromToken(token).getExpiration();
-//        return expiration.before(new Date());
-//    }
 
 }

@@ -1,6 +1,6 @@
 package com.example.hw_jwt.view;
 
-import com.example.hw_jwt.entity.RoleStub;
+import com.example.hw_jwt.entity.RoleType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +15,6 @@ public class CreateUserView {
 
     private String login;
     private String password;
-    private RoleStub roleStub;
+    private RoleType roleType;
 
 }
