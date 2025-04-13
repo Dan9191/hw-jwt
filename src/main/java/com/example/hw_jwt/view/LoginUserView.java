@@ -16,6 +16,5 @@ public class LoginUserView {
 
     private String login;
     private String password;
-    private List<SendType> sendTypeList;
 
 }

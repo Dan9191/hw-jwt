@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.example.hw_jwt.entity.RoleStub.DELETED;
+import static com.example.hw_jwt.entity.RoleStub.findByRole;
 
 /**
  * Сервис по работе с пользователями.
@@ -69,8 +70,12 @@ public class UserService {
     public UserLoginResult loginUser(LoginUserView loginUser) {
         Optional<UserJwt> userJwt =
                 userJwtRepository.findByLoginAndPassword(loginUser.getLogin(), loginUser.getPassword());
-        return userJwt.map(jwt -> UserLoginResult.success(jwtService.generateToken(jwt)))
-                .orElseGet(() -> UserLoginResult.failure("Не удалось найти пользователя по такой комбинации"));
+        return userJwt.map(user ->
+                        UserLoginResult.success(jwtService.generateToken(user), findByRole(user.getRole()))
+                )
+                .orElseGet(() ->
+                        UserLoginResult.failure("Не удалось найти пользователя по такой комбинации")
+                );
     }
 
 //    @Transactional

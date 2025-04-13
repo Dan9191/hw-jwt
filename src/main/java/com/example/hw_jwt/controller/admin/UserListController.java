@@ -1,4 +1,4 @@
-package com.example.hw_jwt.controller;
+package com.example.hw_jwt.controller.admin;
 
 import com.example.hw_jwt.entity.RoleStub;
 import com.example.hw_jwt.service.UserService;

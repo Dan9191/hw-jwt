@@ -1,4 +1,4 @@
-package com.example.hw_jwt.controller;
+package com.example.hw_jwt.controller.admin;
 
 import com.example.hw_jwt.entity.JwtConfig;
 import com.example.hw_jwt.service.JwtService;
