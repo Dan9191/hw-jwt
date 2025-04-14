@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
  * Свойства приложения.
  */
 @Component
-@ConfigurationProperties(prefix = "short-links.properties")
+@ConfigurationProperties(prefix = "token.properties")
 @Data
-public class AppProperties {
+public class TokenProperties {
 
     /**
      * Алгоритм кодирования токена.

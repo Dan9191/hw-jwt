@@ -60,6 +60,9 @@ public class UserService {
         UserJwt user = new UserJwt();
         user.setLogin(createUserView.getLogin());
         user.setPassword(createUserView.getPassword());
+        user.setEmail(createUserView.getEmail());
+        user.setTelegram(createUserView.getTelegram());
+        user.setTelephone(createUserView.getTelephone());
         user.setRole(role);
 
         userJwtRepository.save(user);

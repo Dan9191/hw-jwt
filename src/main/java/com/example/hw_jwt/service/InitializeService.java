@@ -1,6 +1,6 @@
 package com.example.hw_jwt.service;
 
-import com.example.hw_jwt.configuration.AppProperties;
+import com.example.hw_jwt.configuration.TokenProperties;
 import com.example.hw_jwt.entity.JwtConfig;
 import com.example.hw_jwt.repository.JwtConfigRepository;
 import jakarta.annotation.PostConstruct;
@@ -20,7 +20,7 @@ import java.util.Optional;
 public class InitializeService {
 
     private final JwtConfigRepository jwtConfigRepository;
-    private final AppProperties appProperties;
+    private final TokenProperties tokenProperties;
     private final EntityManager entityManager;
 
     /**
@@ -30,15 +30,15 @@ public class InitializeService {
     public void initJwtConfig() {
 
         Optional<JwtConfig> config = jwtConfigRepository.findAll().stream().findFirst();
-        if (appProperties.isConfigurationChangeSign() || config.isEmpty()) {
+        if (tokenProperties.isConfigurationChangeSign() || config.isEmpty()) {
             // Очищаем таблицу
             jwtConfigRepository.deleteAll();
 
             // Создаем новую конфигурацию
             JwtConfig newConfig = new JwtConfig();
-            newConfig.setAlgorithm(appProperties.getAlgorithm());
-            newConfig.setKey(appProperties.getSecretKey());
-            newConfig.setExpMillis(appProperties.getExpMillis());
+            newConfig.setAlgorithm(tokenProperties.getAlgorithm());
+            newConfig.setKey(tokenProperties.getSecretKey());
+            newConfig.setExpMillis(tokenProperties.getExpMillis());
 
             jwtConfigRepository.save(newConfig);
             log.info("Token configuration has been updated");

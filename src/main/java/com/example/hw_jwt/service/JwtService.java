@@ -168,4 +168,9 @@ public class JwtService {
         log.info("tokens have been removed for the user {}", userJwt.getLogin());
     }
 
+    @Transactional
+    public JwtToken getJwtTokenByCode(String code) {
+        return jwtTokenRepository.findAllByToken(code).getFirst();
+    }
+
 }

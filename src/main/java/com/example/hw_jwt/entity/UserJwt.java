@@ -34,4 +34,13 @@ public class UserJwt {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
+    @Column(name = "telegram", nullable = false, unique = true)
+    private String telegram;
+
+    @Column(name = "telephone", nullable = false, unique = true)
+    private String telephone;
+
 }

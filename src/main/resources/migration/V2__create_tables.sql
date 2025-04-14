@@ -28,6 +28,9 @@ WHERE NOT EXISTS (SELECT 1 FROM role WHERE id = 3);
 CREATE TABLE IF NOT EXISTS user_jwt (
                         id BIGSERIAL PRIMARY KEY,
                         login VARCHAR(100) NOT NULL UNIQUE,
+                        email VARCHAR(100) NOT NULL,
+                        telegram VARCHAR(100) NOT NULL,
+                        telephone VARCHAR(100) NOT NULL,
                         password VARCHAR(255) NOT NULL,
                         role_id INTEGER NOT NULL,
                         FOREIGN KEY (role_id) REFERENCES role(id)

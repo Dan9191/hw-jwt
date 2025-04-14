@@ -1,12 +1,15 @@
 package com.example.hw_jwt.view;
 
+import lombok.Getter;
+
 /**
  * Способ отправки.
  */
+@Getter
 public enum SendType {
     EMAIL("email"),
     TELEGRAM("telegram"),
-    SMMP("telephone"),
+    SMPP("telephone"),
     FILE("file");
 
     private final String label;
@@ -15,7 +18,4 @@ public enum SendType {
         this.label = label;
     }
 
-    public String getLabel() {
-        return label;
-    }
 }

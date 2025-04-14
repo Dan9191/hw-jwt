@@ -1,9 +1,13 @@
 package com.example.hw_jwt.controller.user;
 
 import com.example.hw_jwt.entity.JwtConfig;
+import com.example.hw_jwt.entity.JwtToken;
 import com.example.hw_jwt.entity.RoleType;
 import com.example.hw_jwt.model.TokenValidationResult;
 import com.example.hw_jwt.service.JwtService;
+import com.example.hw_jwt.service.send.EmailNotificationService;
+import com.example.hw_jwt.service.send.SmppNotificationService;
+import com.example.hw_jwt.service.send.TelegramNotificationService;
 import com.example.hw_jwt.view.SendType;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,6 +33,12 @@ public class UserOperationsController {
 
     private final JwtService jwtService;
 
+    private final EmailNotificationService emailNotificationService;
+
+    private final SmppNotificationService smppNotificationService;
+
+    private final TelegramNotificationService telegramNotificationService;
+
     @GetMapping
     public String adminPage(Model model,
                             @CookieValue(value = "JWT", required = false) String token,
@@ -49,6 +59,7 @@ public class UserOperationsController {
                             @CookieValue("JWT") String token,
                             RedirectAttributes redirectAttributes,
                             HttpServletResponse response) {
+        String errorMessage = "";
         if (tokenIsNotValidVerification(token, response)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Ошибка валидации токена");
             return "redirect:/login";
@@ -56,9 +67,50 @@ public class UserOperationsController {
         if (sendTypeNames== null || sendTypeNames.isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Должен быть выбран хотя бы 1 способ отправки");
         } else {
-            //todo реализовать отправки
-            redirectAttributes.addFlashAttribute("message", "Отправка удалась");
-            log.info("Sending successful");
+            JwtToken jwtToken = jwtService.getJwtTokenByCode(token);
+            try {
+                if (sendTypeNames.contains("EMAIL")) {
+                    try {
+                        emailNotificationService.sendCode(jwtToken.getUserJwt().getEmail(), token);
+                        log.info("the code has been sent to the mail {}", jwtToken.getUserJwt().getEmail());
+                    } catch (Exception e) {
+                        log.error("error sending to mail {}", e.getMessage());
+                        errorMessage = errorMessage + "\nОшибка отправки по электронной почте";
+                    }
+                }
+                if (sendTypeNames.contains("SMPP")) {
+                    try {
+                        smppNotificationService.sendSms(jwtToken.getUserJwt().getTelephone(), token);
+                        log.info("the code has been sent to the telephone {}", jwtToken.getUserJwt().getTelephone());
+                    } catch (Exception e) {
+                        log.error("error sending to telephone {}", e.getMessage());
+                        errorMessage = errorMessage + "\nОшибка отправки по телефону";
+                    }
+                }
+                if (sendTypeNames.contains("TELEGRAM")) {
+                    try {
+                        telegramNotificationService.sendCode(jwtToken.getUserJwt().getTelegram(), token);
+                        log.info("the code has been sent to the telegram {}", jwtToken.getUserJwt().getTelegram());
+                    } catch (Exception e) {
+                        log.error("error sending to telegram {}", e.getMessage());
+                        errorMessage = errorMessage + "\nОшибка отправки по электронной почте";
+                    }
+                }
+                if (sendTypeNames.contains("FILE")) {
+                    response.setContentType("text/plain");
+                    response.setHeader("Content-Disposition", "attachment; filename=\"Your_OTP_Code.txt\"");
+                    response.getWriter().write("Your verification code is: " + token);
+                    return null;
+                }
+                if (errorMessage.isEmpty()) {
+                    redirectAttributes.addFlashAttribute("message", "Отправка удалась");
+                } else {
+                    redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+                }
+                log.info("Sending successful");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         return "redirect:/user/operations";
     }

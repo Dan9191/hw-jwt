@@ -14,6 +14,9 @@ import lombok.NoArgsConstructor;
 public class CreateUserView {
 
     private String login;
+    private String email;
+    private String telegram;
+    private String telephone;
     private String password;
     private RoleType roleType;
 

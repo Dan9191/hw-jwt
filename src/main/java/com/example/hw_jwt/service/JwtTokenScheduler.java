@@ -37,7 +37,7 @@ public class JwtTokenScheduler {
             log.info("Start deactivating tokens");
             jwtTokenRepository.markExpiredTokensAsExpired();
         } catch (Exception e) {
-            log.error("Error while executingdeactivateTokens: ", e);
+            log.error("Error while executing deactivateTokens: ", e);
         }
     }
 

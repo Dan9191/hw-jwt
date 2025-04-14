@@ -29,6 +29,21 @@
                 </div>
 
                 <div class="mb-3">
+                    <label for="email" class="form-label">Почта</label>
+                    <input type="text" class="form-control" id="email" th:field="*{email}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="telegram" class="form-label">Телеграм</label>
+                    <input type="text" class="form-control" id="telegram" th:field="*{telegram}" placeholder="Введите chat_id"required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="telephone" class="form-label">Телефон</label>
+                    <input type="text" class="form-control" id="telephone" th:field="*{telephone}" required>
+                </div>
+
+                <div class="mb-3">
                     <label for="password" class="form-label">Пароль</label>
                     <input type="password" class="form-control" id="password" th:field="*{password}" required>
                 </div>
@@ -37,6 +52,7 @@
                     <label for="role" class="form-label">Роль</label>
                     <select class="form-select" id="role" th:field="*{roleType}">
                         <option th:each="role : ${T(com.example.hw_jwt.entity.RoleType).values()}"
+                                th:unless="${role == T(com.example.hw_jwt.entity.RoleType).DELETED}"
                                 th:value="${role}"
                                 th:text="${role.label}"></option>
                     </select>

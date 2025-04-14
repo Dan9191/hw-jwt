@@ -18,7 +18,7 @@ public interface JwtTokenRepository extends JpaRepository<JwtToken, Long> {
     UPDATE jwt_token jt
     SET token_status_id = (SELECT id FROM token_status WHERE status = 'EXPIRED')
     WHERE jt.id IN (
-        SELECT jt.id 
+        SELECT jt.id
         FROM jwt_token jt
         JOIN token_status ts ON jt.token_status_id = ts.id
         WHERE ts.status IN ('ACTIVE', 'USED')
