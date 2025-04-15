@@ -26,6 +26,7 @@ public class EmailNotificationService {
 
     public void sendCode(String toEmail, String code) {
         try {
+            log.info("Sending email to {}", toEmail);
             Message message = new MimeMessage(mailSession);
             message.setFrom(new InternetAddress(appMailProperties.getFrom()));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));

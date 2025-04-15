@@ -61,6 +61,7 @@ public class UserOperationsController {
                             HttpServletResponse response) {
         String errorMessage = "";
         if (tokenIsNotValidVerification(token, response)) {
+            log.warn("token {} is not valid", token);
             redirectAttributes.addFlashAttribute("errorMessage", "Ошибка валидации токена");
             return "redirect:/login";
         }

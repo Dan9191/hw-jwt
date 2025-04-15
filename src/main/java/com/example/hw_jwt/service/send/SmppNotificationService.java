@@ -54,6 +54,7 @@ public class SmppNotificationService {
     }
 
     public void sendSms(String phone, String message) throws Exception {
+        log.info("sendSms phone={} message={}", phone, message);
         SubmitSM submitSM = new SubmitSM();
         submitSM.setSourceAddr(appSmppProperties.getSourceAddr());
         submitSM.setDestAddr(phone);

@@ -50,6 +50,7 @@ public class AdminOperationsController {
                             RedirectAttributes redirectAttributes,
                             HttpServletResponse response) {
         if (tokenIsNotValidVerification(token, response)) {
+            log.warn("token {} is not valid", token);
             redirectAttributes.addFlashAttribute("errorMessage", "Ошибка валидации токена");
             return "redirect:/login";
         }
@@ -70,6 +71,7 @@ public class AdminOperationsController {
         String errorMessage = "";
         if (tokenIsNotValidVerification(token, response)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Ошибка валидации токена");
+            log.warn("token {} is not valid", token);
             return "redirect:/login";
         }
         if (sendTypeNames == null || sendTypeNames.isEmpty()) {
@@ -129,6 +131,7 @@ public class AdminOperationsController {
                                 RedirectAttributes redirectAttributes,
                                 HttpServletResponse response) {
         if (tokenIsNotValidVerification(token, response)) {
+            log.warn("token {} is not valid", token);
             redirectAttributes.addFlashAttribute("errorMessage", "Ошибка валидации токена");
             return "redirect:/login";
         }
@@ -145,6 +148,7 @@ public class AdminOperationsController {
                                HttpServletResponse response) {
         if (tokenIsNotValidVerification(token, response)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Ошибка валидации токена");
+            log.warn("token {} is not valid", token);
             return "redirect:/login";
         }
         jwtService.updateConfig(config);
