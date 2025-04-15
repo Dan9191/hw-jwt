@@ -33,7 +33,7 @@ public class LoginController {
     public String login(@ModelAttribute LoginUserView user,
                         HttpServletResponse response,
                         Model model) {
-        log.info("login user: {}", user);
+        log.info("login user: {}", user.getLogin());
         UserLoginResult userLoginResult = userService.loginUser(user);
         if (userLoginResult.success()) {
             Cookie cookie = new Cookie("JWT", userLoginResult.token());
